@@ -1,6 +1,7 @@
 const WIDGET_TITLE = "openbb.co/open"
 const GITHUB_REPO = "OpenBB-finance/OpenBBTerminal"
 const PIP_PACKAGE_NAME = "openbb"
+const CACHED_DATA_HOURS = 1
   
 async function createWidget() {
   // Create new empty ListWidget instance
@@ -24,7 +25,7 @@ async function createWidget() {
   
   // This logic allows to save data in cache to avoid doing multiple requests
   const files = FileManager.local()
-  const path = files.joinPath(files.cacheDirectory(), "widget-apple-11")
+  const path = files.joinPath(files.cacheDirectory(), "widget-apple-open-source")
   
   // Check if a cache file exists
   const cacheExists = files.fileExists(path)
@@ -40,7 +41,7 @@ async function createWidget() {
   let pipy_downloads = "?"
   
   // If cache exists and it has been written within last 1 hour, retrieve that data
-  if (cacheExists && (currentTime - cacheDate) < (1 * 60 * 60 * 1000)) {
+  if (cacheExists && (currentTime - cacheDate) < (CACHED_DATA_HOURS * 60 * 60 * 1000)) {
     
     // Get the data from cached file
     data_cached = JSON.parse(files.readString(path))
