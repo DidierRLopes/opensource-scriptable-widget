@@ -39,7 +39,7 @@ const CACHED_DATA_HOURS = 1
 
 10. Click on the "+" on the left top corner
 
-11. In the "Search Wigets" tab look for "Scriptable"
+11. In the "Search Widgets" tab look for "Scriptable"
 
 12. You will see "Run Script" and there are 3 pages. Select the type of widget size that you are interested in
 
