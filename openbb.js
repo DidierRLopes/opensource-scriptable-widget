@@ -24,8 +24,9 @@ async function createWidget() {
   listwidget.addSpacer(15);
   
   // This logic allows to save data in cache to avoid doing multiple requests
+  // change the name of the path if you want to avoid getting cached data
   const files = FileManager.local()
-  const path = files.joinPath(files.cacheDirectory(), "widget-apple-openbb")
+  const path = files.joinPath(files.cacheDirectory(), "widget-openbb-data")
   
   // Check if a cache file exists
   const cacheExists = files.fileExists(path) // do = false for testing
@@ -38,6 +39,7 @@ async function createWidget() {
   
   // let new_stars = "?"
   // let new_forks = "?"
+  let users = "?"
   let stars = "?"
   let forks = "?"
   let pipy_downloads = "?"
@@ -53,6 +55,8 @@ async function createWidget() {
     // new_stars = data_cached["stars"] 
     // new_forks = data_cached["forks"]
     
+    users = data_cached["users"]
+    
     stars = data_cached["stars"] 
     forks = data_cached["forks"]
     
@@ -66,6 +70,8 @@ async function createWidget() {
     data_to_be_cached = {}
     
     // Do a new data request
+    users = await getHubUsers();
+    
     starsAndForks = await getGitHubStarsAndForks(GITHUB_REPO);
     stars = starsAndForks[0]
     forks = starsAndForks[1]
@@ -79,6 +85,7 @@ async function createWidget() {
 
     // data_to_be_cached["stars"] = new_stars
     // data_to_be_cached["forks"] = new_forks
+    data_to_be_cached["users"] = users
     data_to_be_cached["stars"] = stars
     data_to_be_cached["forks"] = forks
     data_to_be_cached["pipy_downloads"] = pipy_downloads
@@ -88,6 +95,19 @@ async function createWidget() {
     // Update cached file with such data
     files.writeString(path, JSON.stringify(data_to_be_cached))
   }
+  
+  // Display Hub users
+  let hubHeader = listwidget.addText(`🦋 OpenBB Hub 🦋`);
+  hubHeader.centerAlignText();
+  hubHeader.font = Font.semiboldSystemFont(20);
+  hubHeader.textColor = new Color("#FFFFFF");
+  listwidget.addSpacer(10);
+  // let githubStars = listwidget.addText(`New stargazers: ${new_stars}`);
+  let hubUsers = listwidget.addText(`Users: ${users}`);
+  hubUsers.centerAlignText();
+  hubUsers.font = Font.semiboldSystemFont(16);
+  hubUsers.textColor = new Color("#FFFFFF");
+  listwidget.addSpacer(15);
  
   // Display stars from project
   let githubHeader = listwidget.addText(`💻 OpenBB Terminal 💻`);
@@ -102,11 +122,12 @@ async function createWidget() {
   githubStars.textColor = new Color("#FFFFFF");
   listwidget.addSpacer(10);
   // let githubForks = listwidget.addText(`New forks: ${new_forks}`);
-  let githubForks = listwidget.addText(`Forks: ${forks}`);
-  githubForks.centerAlignText();
-  githubForks.font = Font.semiboldSystemFont(16);
-  githubForks.textColor = new Color("#FFFFFF");
-  listwidget.addSpacer(30);
+  // let githubForks = listwidget.addText(`Forks: ${forks}`);
+  // githubForks.centerAlignText();
+  // githubForks.font = Font.semiboldSystemFont(16);
+  // githubForks.textColor = new Color("#FFFFFF");
+  // listwidget.addSpacer(30);
+  
     
   // Display pip install from last day
   let pipyHeader = listwidget.addText(`🔥 OpenBB SDK 🔥`);
@@ -118,7 +139,7 @@ async function createWidget() {
   pipy.centerAlignText();
   pipy.font = Font.semiboldSystemFont(16);
   pipy.textColor = new Color("#FFFFFF");
-  listwidget.addSpacer(30);
+  listwidget.addSpacer(15);
 
   // Display OpenBB Bot WAU
   let discordHeader = listwidget.addText(`🤖 OpenBB Bot 🤖`);
@@ -138,6 +159,19 @@ async function createWidget() {
 
   // Return the created widget
   return listwidget;
+}
+
+async function getHubUsers() {
+  // Query url
+  const url = `https://payments.openbb.co/metrics/users`;
+
+  // Initialize new request
+  const request = new Request(url);
+
+  // Execute the request and parse the response as json
+  const data = await request.loadJSON();
+  
+  return data.users.slice(-1)[0].count
 }
 
 
